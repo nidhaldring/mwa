@@ -1,1 +1,35 @@
 
+
+{% macro render_fields(fs) %}
+
+{%for f in fs %}
+{% if f.name != "csrf_token" %}
+{{f.name}} :
+{%endif%}
+{{f}} <br/>
+{%endfor%}
+
+{%endmacro%}
+{# this ends here #}
+{#....#}
+
+{% macro show_flashed_messages()%}
+{%with msgs=get_flashed_messages()%}
+
+{%for m in msgs%}
+{{m}} <br/>
+{%endfor%}
+
+{%endwith%}
+{%endmacro%}
+{#....#}
+
+
+{% macro fields_errors(form) %}
+{% if form.errors %}
+{%for e in form.errors.values()%}
+{{str(e)[2:len(s)-2]}} <br/>
+{%endfor%}
+{%endif%}
+{%endmacro%}
+
