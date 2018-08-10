@@ -1,1 +1,20 @@
+{% import  'func.html' as f  with context%}
+
+
+hello,
+{% if current_user.is_active %}
+{{current_user.username}}
+<br/>
+{{f.show_flashed_messages()}}
+{% if  not current_user.confirmed %}
+<br/>
+please confirm or <a href="{{url_for('auth.resend_confirmation')}}">resend </a>confirmation link 
+{%endif%}
+<br/>
+{%else%}
+anonymous
+{%endif%}
+
+
+
 
