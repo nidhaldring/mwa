@@ -1,3 +1,3 @@
 # mwa
-sample web app 
+simple web app 
 yup that's it
