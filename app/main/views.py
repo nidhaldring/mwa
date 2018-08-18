@@ -45,11 +45,12 @@ def editprofile():
 			# gotta send dat conf email again
 			#
 			send_conf_mail(form.email.data,current_user.generate_confirmation_link())
-			# hope this works 
-			# if not than i need to see where current_user can be used
-			#change the user state to uncofrmed
+			# 
+			# 
+			#change the user state to uncofirmed
 			current_user.confirmed=False	
 			flash("a message has been sent to your new email , please follow for instructions")
+		
 		#save changes 	
 		db.session.add(current_user)
 	
@@ -82,19 +83,19 @@ def upload_pic():
 
 		#every pic should have a unique name 
 		split=list(splitext(file.filename))
-		split[0]=str(Signer(current_app.config['SECRET_KEY']).sign(split[0].encode('utf-8')))
-		file.filename=""
-		file.filename.join(split)
+		split[0]=Signer(current_app.config['SECRET_KEY']).sign(split[0].encode('utf-8')).decode('utf-8')
+		file.filename="".join(split)
 		#
-
-		path=os.path.join(url_for('static',filename=current_app.config['UPLOAD_FOLDER']),
-											file.filename)	
+		 
+		path=os.path.join(current_app.config['UPLOAD_FOLDER'],file.filename)	
 
 		# delete the old one
 		if current_user.profile_pic != current_app.config["USER_DEFAULT_PIC"]:
 			os.unlink(url_for('static',filename=current_user.profile_pic))
+
 		current_user.profile_pic=path
-		file.save(path)		
+		_=os.path.join('app','static')
+		file.save(os.path.join( _ , path ))		
 		#
 
 		db.session.add(current_user )
