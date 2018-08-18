@@ -1,5 +1,5 @@
 import os
-
+import sys
 
 class Config:
 	#ADMIN_MAIL="dringthedreamer@gmail.com"
@@ -7,8 +7,13 @@ class Config:
     TESTING=False
     SQLALCHEMY_TRACK_MODIFICATIONS=False
     SQLALCHEMY_COMMIT_ON_TEARDOWN=True
-    UPLOAD_FOLDER="./uploads"
+    UPLOAD_FOLDER=os.path.join("uploads","")
     
+    postfix='/'
+    if 'win' in sys.platform:
+        postfix='\''
+    UPLOAD_FOLDER+=postfix 
+
     #USELESS FOR NOW
     #lel berka :v
     def init_app(app):pass
@@ -24,7 +29,8 @@ class Dev(Config):
     MAIL_DEFAULT_SENDER=("admin","dringthedreamer@gmail.com")
     MAX_CONTENT_LENGTH=16*1024*1024
     # 16 mb is the max for file uploading 
-
+    ALLOWED_EXTENSIONS='jpg','png','jpeg'
+    USER_DEFAULT_PIC=os.path.join('uploads','default.jpg')
 
 class Test(Dev):
     Testing=True
