@@ -1,0 +1,12 @@
+{% import  'func.html' as f  with context%}
+
+<form method="post" action="{{url_for('main.upload_pic')}}" enctype='multipart/form-data'>
+<input type='file' name='file'>
+<input value="upload" type="submit">
+<form/>
+<br/>
+<img src="{{ url_for("static",filename="uploads/default.jpg") }}"/>
+
+<br/>
+{{f.show_flashed_messages()}}
+<br/>
