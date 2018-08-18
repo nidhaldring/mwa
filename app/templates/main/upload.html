@@ -3,9 +3,9 @@
 <form method="post" action="{{url_for('main.upload_pic')}}" enctype='multipart/form-data'>
 <input type='file' name='file'>
 <input value="upload" type="submit">
-<form/>
+</form>
 <br/>
-<img src="{{ url_for( "static",filename=current_user.profile_pic ) }}"/>
+<img src="{{ url_for( "static",filename=current_user.profile_pic ) }}">
 
 <br/>
 {{f.show_flashed_messages()}}
