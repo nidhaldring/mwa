@@ -4,18 +4,19 @@ from app.main import main
 from app.models import User
 from flask import abort,render_template,redirect,url_for,flash
 from flask_login import login_required,current_user
-from app.forms import EditProfileForm,UploadForm
+from app.forms import EditProfileForm
 from flask import request
 from app import db 
-from flask import current_app
+from flask import current_app,request
 from app.auth.func import send_conf_mail
 from werkzeug.utils import secure_filename
 import os 
-
+from os.path import splitext
+from itsdangerous import Signer
 
 @main.route("/")
 def index():
-	return "hello"
+	return render_template("auth/index.html")
 
 
 
@@ -61,21 +62,43 @@ def editprofile():
 	return render_template("main/edit.html",form=form)		
 
 
-@main.route("/uploadprofilepicture",methods=['POST','GET'])
+@main.route("/updateprofilepicture",methods=['POST','GET'])
 @login_required
 def upload_pic():
-	form=UploadForm(request.form)
-	if form.validate_on_submit():
-		if  not request.files:
-			return redirect(url_for('.upload_pic'))
-		filename=secure_filename(form.image_name.data)
+	
+	if request.method=="POST":
+		if  'file' not  in request.files:
+			flash(" please upload a file !")
+			return redirect(url_for('.upload_pic'))	
+		request.files['file'].filename=secure_filename(request.files['file'].filename)
 		# so secure name basically removes / or \  depending on os 
 		# to prevent vulnerabilities 
-		#no need to check for extensions since it's done in the form submission 
-		file=request.files[form.image_name.data]
-		f=os.path.join(current_app['UPLOAD_FOLDER'],filename)	
-		file.save(f)
-		current_user.profile_pic=f
+		file=request.files['file']
+
+		#checks file extension
+		if splitext(file.filename)[1][1:] not in current_app.config['ALLOWED_EXTENSIONS']:
+			flash("extension not allowed only %s ,%s, %s are allowed"%current_app.config['ALLOWED_EXTENSIONS'])
+			return redirect(url_for('.upload_pic'))
+
+		#every pic should have a unique name 
+		split=list(splitext(file.filename))
+		split[0]=str(Signer(current_app.config['SECRET_KEY']).sign(split[0].encode('utf-8')))
+		file.filename=""
+		file.filename.join(split)
+		#
+
+		path=os.path.join(url_for('static',filename=current_app.config['UPLOAD_FOLDER']),
+											file.filename)	
+
+		# delete the old one
+		if current_user.profile_pic != current_app.config["USER_DEFAULT_PIC"]:
+			os.unlink(url_for('static',filename=current_user.profile_pic))
+		current_user.profile_pic=path
+		file.save(path)		
+		#
+
 		db.session.add(current_user )
 		flash("your profile pciture has been updated properly ")
 		return redirect(url_for('.index'))
+	return render_template("main/upload.html")	
+
