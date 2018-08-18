@@ -3,6 +3,8 @@ from wtforms import ValidationError
 from wtforms import StringField,PasswordField,RadioField,TextField,BooleanField,FileField
 from wtforms.validators import DataRequired,EqualTo,Email,Length,Regexp
 import string
+from flask import current_app
+
 
 class RegisterForm(Form):
     username=StringField("write your name plz ",[DataRequired(message="username can't be left blank"),Length(4,69)])
@@ -47,5 +49,5 @@ class EditProfileForm(Form):
 #might as well finish writing better error messages     
 
 
-class UploadForm(Form):
-    image_name=FileField('upload a file',validators=[Regexp('.jpg$')])
+
+    
